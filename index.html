@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <link rel="stylesheet" href="fontawesome/all.min.css">
+    <link rel="stylesheet" href="bootstrap-4.3.1-dist/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div class="header">
+        <div class="px-3 py-2 box">
+            <p id="title-header">To-do App</p>
+            <p id="text-header" class="mb-0">What do you need to do?</p>
+        </div>
+    </div>
+    <div class="action-box">
+        <div class="box px-3 py-2">
+            <input type="text" id="search-box" class="d-inline-block mr-3 form-control form-control-sm"
+                placeholder="Filter Todos">
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input">
+                <label for="" class="form-check-label text-light">Hide Completed</label>
+            </div>
+        </div>
+    </div>
+    <div class="content-box">
+        <div class="box px-3 py-2">
+            <div id="notify">You have <span id="notify-text"></span> todo left</div>
+            <div id="todo-list" class="my-3">
+                <!-- <label class="item" for="a">
+                    <div class="form-check-inline">
+                        <input type="checkbox" id="a" class="form-check-input">
+                        <span class="todo-text">Todo</span>
+                    </div>
+                    <button class="btn btn-link remove-btn btn-sm">Remove</button>
+                </label> -->
+
+            </div>
+            <div>
+                <form action="" id="form">
+                    <input type="text" id="item-input" class="d-inline-block mr-3 form-control form-control-sm"
+                        placeholder="New Todo">
+                    <button type="submit" class="btn btn-danger">Submit</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script src="bootstrap-4.3.1-dist/jquery-3.3.1.js"></script>
+    <script src="bootstrap-4.3.1-dist/bootstrap.bundle.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

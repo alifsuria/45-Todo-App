@@ -1,0 +1,90 @@
+body {
+  background: #2b292e;
+}
+
+.box {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 0 1.6rem;
+  position: relative;
+}
+
+.header {
+  background-color: #6f439c;
+  color: #fff;
+}
+
+#title-header {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+#text-header {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+#search-box,
+#item-input {
+  width: 35%;
+}
+
+.action-box {
+  background-color: #353239;
+}
+
+.content-box {
+  color: white;
+  background-color: #2b292e;
+}
+
+.todo-text {
+  font-size: 1.2rem;
+}
+
+#notify {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.remove-btn {
+  color: gray;
+}
+
+.remove-btn:hover {
+  color: white;
+}
+
+.item {
+  border: 1px solid grey;
+  display: flex;
+  justify-content: space-between;
+  cursor: pointer;
+  background-color: #323035;
+  padding: 13px 15px;
+  transition: ease-in-out 0.1s;
+}
+
+.item:hover {
+  border: 1px solid grey;
+  background-color: #413e46;
+}
+
+@media (max-width: 579px) {
+  #todo-list {
+    overflow-y: scroll;
+    max-height: 250px;
+    margin: 0px 10px !important;
+  }
+
+  .header > .box{
+    padding: 0px 10px 5px 10px !important;
+  }
+
+  #notify{
+    text-align: center;
+  }
+
+}
