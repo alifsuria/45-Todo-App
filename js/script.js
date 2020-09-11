@@ -7,11 +7,22 @@ const search_box = document.getElementById("search-box");
 
 let todos = get_Saved();
 
+function get_Saved() {
+  let jsonStore = localStorage.getItem("todo");
+
+  if(jsonStore === null){
+    return []
+  }else{
+    return JSON.parse(jsonStore)
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  console.log(todos)
   if (todos === null) {
     return;
   } else {
-    create_item(todos);
+    create_item(get_Saved());
     summary(todos);
   }
 });
@@ -25,20 +36,20 @@ form.addEventListener("submit", (event) => {
     completed: false,
   };
 
-  validate(input_value, todo);
+  validate(input_value, todo,todos);
 
   item_input.value = "";
   console.log(input_value, JSON.parse(localStorage.getItem("todo")));
 });
 
-function validate(value, todo) {
+function validate(value, todo,storage) {
   console.log(storage);
-  // debugger;
+  debugger;
   if (storage === null) {
     console.log("first if");
     get_Local_Storage(todo);
-    create_item(todos);
-  } else if (storage.length > 0) {
+    create_item(get_Saved());
+  } else if (storage.length >= 0) {
     console.log("second if");
 
     for (let i = 0; i < storage.length; i++) {
@@ -49,8 +60,9 @@ function validate(value, todo) {
     }
     console.log("finished loop");
     get_Local_Storage(todo);
-    create_item(todos);
+    create_item(get_Saved());
   }
+  summary(get_Saved())
 }
 
 const get_Local_Storage = (item) => {
@@ -85,7 +97,7 @@ const create_item = (storage) => {
     input.setAttribute("id", `${item.text}`);
     input.checked = item.completed;
     input.addEventListener("change", (event) => {
-      action_state(event, storage, span, item, true);
+      action_state(event, get_Saved(), span, item, true);
     });
 
     div.appendChild(input);
@@ -98,7 +110,7 @@ const create_item = (storage) => {
 
     btn.addEventListener("click", () => {
       console.log("click btn", item);
-      action_state(null, storage, null, item, false);
+      action_state(null, get_Saved(), null, item, false);
     });
 
     if (item.completed === true) {
@@ -113,6 +125,7 @@ const create_item = (storage) => {
 
 function action_state(event, store, text, item, bool) {
   if (bool === true) {
+    debugger;
     item.completed = event.target.checked;
     let newOne = JSON.stringify(store);
     localStorage.removeItem("todo");
@@ -125,12 +138,15 @@ function action_state(event, store, text, item, bool) {
     console.log(event.target.checked, store);
     summary(store);
   } else if (bool === false) {
+    debugger;
     let old = store.filter((target) => {
-      return target !== item;
+      console.log(target)
+      return target === !item;
     });
     localStorage.removeItem("todo");
     localStorage.setItem("todo", JSON.stringify(old));
-    create_item(store);
+    create_item(old);
+    summary(old)
   }
 }
 
@@ -152,7 +168,7 @@ function filter() {
   console.log(filterTodos);
 
   if (search_value === "") {
-    create_item(todos);
+    create_item(get_Saved());
   } else {
     create_item(filterTodos);
   }
@@ -162,6 +178,4 @@ search_box.addEventListener("input", () => {
   filter();
 });
 
-function get_Saved() {
-  return JSON.parse(localStorage.getItem("todo"));
-}
+
