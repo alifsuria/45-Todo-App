@@ -3,22 +3,22 @@ const form = document.getElementById("form");
 const todoList = document.getElementById("todo-list");
 const notify_text = document.getElementById("notify-text");
 const search_box = document.getElementById("search-box");
-// localStorage.clear();
+const hide_complete = document.getElementById("hide-complete");
 
 let todos = get_Saved();
 
 function get_Saved() {
   let jsonStore = localStorage.getItem("todo");
 
-  if(jsonStore === null){
-    return []
-  }else{
-    return JSON.parse(jsonStore)
+  if (jsonStore === null) {
+    return [];
+  } else {
+    return JSON.parse(jsonStore);
   }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log(todos)
+  console.log(todos);
   if (todos === null) {
     return;
   } else {
@@ -36,13 +36,19 @@ form.addEventListener("submit", (event) => {
     completed: false,
   };
 
-  validate(input_value, todo,todos);
+  validate(input_value, todo, todos);
 
   item_input.value = "";
   console.log(input_value, JSON.parse(localStorage.getItem("todo")));
 });
 
-function validate(value, todo,storage) {
+hide_complete.addEventListener("change", (event) => {
+  console.log(event.target.checked);
+
+  filter(event.target.checked);
+});
+
+function validate(value, todo, storage) {
   console.log(storage);
   debugger;
   if (storage === null) {
@@ -62,7 +68,7 @@ function validate(value, todo,storage) {
     get_Local_Storage(todo);
     create_item(get_Saved());
   }
-  summary(get_Saved())
+  summary(get_Saved());
 }
 
 const get_Local_Storage = (item) => {
@@ -109,6 +115,7 @@ const create_item = (storage) => {
     parentDiv.appendChild(btn);
 
     btn.addEventListener("click", () => {
+      debugger;
       console.log("click btn", item);
       action_state(null, get_Saved(), null, item, false);
     });
@@ -127,26 +134,34 @@ function action_state(event, store, text, item, bool) {
   if (bool === true) {
     debugger;
     item.completed = event.target.checked;
-    let newOne = JSON.stringify(store);
+    let newOne = store.filter((target) => {
+      if (target.text === item.text) {
+        target.completed = item.completed;
+      }
+      return target;
+    });
+    console.log(newOne);
     localStorage.removeItem("todo");
-    localStorage.setItem("todo", newOne);
+    localStorage.setItem("todo", JSON.stringify(newOne));
+
     if (item.completed === true) {
       text.style.textDecoration = "line-through";
     } else {
       text.style.textDecoration = "none";
     }
-    console.log(event.target.checked, store);
+    console.log(event.target.checked, get_Saved());
     summary(store);
   } else if (bool === false) {
     debugger;
     let old = store.filter((target) => {
-      console.log(target)
-      return target === !item;
+      console.log(target);
+      return target.text !== item.text;
     });
+    console.log(old);
     localStorage.removeItem("todo");
     localStorage.setItem("todo", JSON.stringify(old));
     create_item(old);
-    summary(old)
+    summary(old);
   }
 }
 
@@ -158,24 +173,25 @@ function summary(store) {
   notify_text.innerHTML = todos.length;
 }
 
-function filter() {
+function filter(filter) {
+  debugger;
   todoList.innerHTML = "";
   let store = JSON.parse(localStorage.getItem("todo"));
   let search_value = search_box.value;
   let filterTodos = store.filter((item) => {
-    return item.text.toLowerCase() === search_value.toLowerCase();
+    return item.text.toLowerCase().includes(search_value.toLowerCase());
   });
-  console.log(filterTodos);
 
-  if (search_value === "") {
-    create_item(get_Saved());
-  } else {
-    create_item(filterTodos);
+  if (filter) {
+    filterTodos = store.filter((item) => {
+      return item.completed === !filter;
+    });
+    console.log(filterTodos);
   }
+
+  create_item(filterTodos);
 }
 
 search_box.addEventListener("input", () => {
   filter();
 });
-
-
