@@ -1,197 +1,61 @@
-const item_input = document.getElementById("item-input");
 const form = document.getElementById("form");
-const todoList = document.getElementById("todo-list");
-const notify_text = document.getElementById("notify-text");
-const search_box = document.getElementById("search-box");
-const hide_complete = document.getElementById("hide-complete");
+const todo_input = document.getElementById("todo-input");
+const filter_box = document.getElementById("filter-box");
+const hide_complete = document.getElementById("hide-completed");
 
-let todos = get_Saved();
-
-function get_Saved() {
-  let jsonStore = localStorage.getItem("todo");
-
-  if (jsonStore === null) {
-    return [];
-  } else {
-    return JSON.parse(jsonStore);
-  }
-}
+let todos = get_saved_todo();
 
 document.addEventListener("DOMContentLoaded", () => {
-  console.log(todos);
-  if (todos === null) {
-    return;
-  } else {
-    create_item(get_Saved());
-    summary(todos);
-  }
+  generate_Dom(todos);
 });
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  let input_value = item_input.value;
+  let input_value = todo_input.value;
+  //   debugger;
+  let jsonStore = JSON.parse(localStorage.getItem("todo-2"));
+  console.log(jsonStore);
 
-  let todo = {
-    text: input_value,
-    completed: false,
-  };
+  if (input_value.length > 0) {
+    let todo = {
+      id: generate_rand_ID(),
+      text: input_value,
+      completed: false,
+    };
+    console.log(todos);
+    todos.push(todo);
+    save_todo(todos);
+    filter(todos);
+    // console.log(todos);
+  }
+  todo_input.value = "";
+});
 
-  validate(input_value, todo, todos);
+console.log(todos);
 
-  item_input.value = "";
-  console.log(input_value, JSON.parse(localStorage.getItem("todo")));
+filter_box.addEventListener("input", () => {
+  filter(todos);
 });
 
 hide_complete.addEventListener("change", (event) => {
   console.log(event.target.checked);
-
-  filter(event.target.checked);
+  filter(todos);
 });
 
-function validate(value, todo, storage) {
-  console.log(storage);
-  debugger;
-  if (storage === null) {
-    console.log("first if");
-    get_Local_Storage(todo);
-    create_item(get_Saved());
-  } else if (storage.length >= 0) {
-    console.log("second if");
+const filter = (todos) => {
+  const filter_value = filter_box.value;
+  let filter = todos.filter((item) => {
+    // console.log(item.text.toLowerCase().includes(filter_value.toLowerCase()))
+    return item.text.toLowerCase().includes(filter_value.toLowerCase());
+  });
 
-    for (let i = 0; i < storage.length; i++) {
-      console.log(storage[i].text);
-      if (value === storage[i].text) {
-        return alert("word existed");
-      }
-    }
-    console.log("finished loop");
-    get_Local_Storage(todo);
-    create_item(get_Saved());
+  if (hide_complete.checked) {
+    filter = todos.filter((item) => {
+      return !item.completed;
+    });
+    console.log(filter);
   }
-  summary(get_Saved());
-}
-
-const get_Local_Storage = (item) => {
-  let storage = localStorage.getItem("todo");
-  if (storage === null) {
-    storage = [];
-  } else {
-    storage = JSON.parse(localStorage.getItem("todo"));
-  }
-  storage.push(item);
-  localStorage.setItem("todo", JSON.stringify(storage));
+  console.log(filter);
+  generate_Dom(filter);
+  todos_summery(todos);
 };
-
-const create_item = (storage) => {
-  todoList.innerHTML = "";
-  storage.forEach((item) => {
-    let parentDiv = document.createElement("label");
-    parentDiv.classList.add("item", "my-3");
-    parentDiv.setAttribute("for", `${item.text}`);
-
-    let div = document.createElement("div");
-    div.classList.add("form-check-inline");
-    parentDiv.appendChild(div);
-
-    let span = document.createElement("span");
-    span.classList.add("todo-text");
-    span.innerHTML = item.text;
-
-    let input = document.createElement("input");
-    input.classList.add("form-check-input");
-    input.setAttribute("type", "checkbox");
-    input.setAttribute("id", `${item.text}`);
-    input.checked = item.completed;
-    input.addEventListener("change", (event) => {
-      action_state(event, get_Saved(), span, item, true);
-    });
-
-    div.appendChild(input);
-    div.appendChild(span);
-
-    let btn = document.createElement("button");
-    btn.classList.add("btn", "btn-link", "remove-btn", "btn-sm");
-    btn.innerHTML = "remove";
-    parentDiv.appendChild(btn);
-
-    btn.addEventListener("click", () => {
-      debugger;
-      console.log("click btn", item);
-      action_state(null, get_Saved(), null, item, false);
-    });
-
-    if (item.completed === true) {
-      span.style.textDecoration = "line-through";
-    } else {
-      span.style.textDecoration = "none";
-    }
-
-    todoList.appendChild(parentDiv);
-  });
-};
-
-function action_state(event, store, text, item, bool) {
-  if (bool === true) {
-    debugger;
-    item.completed = event.target.checked;
-    let newOne = store.filter((target) => {
-      if (target.text === item.text) {
-        target.completed = item.completed;
-      }
-      return target;
-    });
-    console.log(newOne);
-    localStorage.removeItem("todo");
-    localStorage.setItem("todo", JSON.stringify(newOne));
-
-    if (item.completed === true) {
-      text.style.textDecoration = "line-through";
-    } else {
-      text.style.textDecoration = "none";
-    }
-    console.log(event.target.checked, get_Saved());
-    summary(store);
-  } else if (bool === false) {
-    debugger;
-    let old = store.filter((target) => {
-      console.log(target);
-      return target.text !== item.text;
-    });
-    console.log(old);
-    localStorage.removeItem("todo");
-    localStorage.setItem("todo", JSON.stringify(old));
-    create_item(old);
-    summary(old);
-  }
-}
-
-function summary(store) {
-  let todos = store.filter((item) => {
-    return !item.completed;
-  });
-
-  notify_text.innerHTML = todos.length;
-}
-
-function filter(filter) {
-  debugger;
-  todoList.innerHTML = "";
-  let store = JSON.parse(localStorage.getItem("todo"));
-  let search_value = search_box.value;
-  let filterTodos = store.filter((item) => {
-    return item.text.toLowerCase().includes(search_value.toLowerCase());
-  });
-
-  if (filter) {
-    filterTodos = store.filter((item) => {
-      return item.completed === !filter;
-    });
-    console.log(filterTodos);
-  }
-
-  create_item(filterTodos);
-}
-
-search_box.addEventListener("input", () => {
-  filter();
-});
